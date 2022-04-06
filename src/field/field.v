@@ -2,15 +2,15 @@ module field
 
 import term
 import term.ui
-import box { Box, Content }
+import src.box { Box, Content }
 
 pub struct Field {
 mut:
-	tui &ui.Context
-	width int
+	tui    &ui.Context
+	width  int
 	height int
 pub mut:
-	boxes []Box
+	boxes  []Box
 	frozen bool
 }
 
@@ -31,7 +31,7 @@ fn (field Field) selected() int {
 pub fn (mut field Field) display() {
 	field.tui.draw_rect(0, 0, field.tui.window_width, field.tui.window_height)
 
-	mut current_row := ""
+	mut current_row := ''
 	mut board := []string{}
 	for index, box in field.boxes {
 		value := match box.content {
@@ -43,36 +43,32 @@ pub fn (mut field Field) display() {
 		match index % 3 {
 			0 {
 				if box.selected {
-					current_row += "[ $value ]"
-				}
-				else if field.boxes[index + 1].selected {
-					current_row += "| $value ["
-				}
-				else {
-					current_row += "| $value |"
+					current_row += '[ $value ]'
+				} else if field.boxes[index + 1].selected {
+					current_row += '| $value ['
+				} else {
+					current_row += '| $value |'
 				}
 			}
 			1 {
-				current_row += " $value "
+				current_row += ' $value '
 			}
 			2 {
 				if box.selected {
-					current_row += "[ $value ]"
-				}
-				else if field.boxes[index - 1].selected {
-					current_row += "] $value |"
-				}
-				else {
-					current_row += "| $value |"
+					current_row += '[ $value ]'
+				} else if field.boxes[index - 1].selected {
+					current_row += '] $value |'
+				} else {
+					current_row += '| $value |'
 				}
 
 				board << current_row
 
 				if index != 8 {
-					board << "|---+---+---|"
+					board << '|---+---+---|'
 				}
 
-				current_row = ""
+				current_row = ''
 			}
 			else {}
 		}
@@ -124,13 +120,13 @@ pub fn (mut field Field) move(direction Direction) {
 
 pub fn (mut field Field) select_box(content Content) ? {
 	if field.frozen {
-		return error("Field is frozen")
+		return error('Field is frozen')
 	}
 
 	index := field.selected()
 
 	if field.boxes[index].content != Content.empty {
-		return error("Box not empty")
+		return error('Box not empty')
 	}
 
 	field.boxes[index].content = content
@@ -141,26 +137,34 @@ pub fn (field Field) is_full() bool {
 }
 
 pub fn (field Field) get_winner() ?Content {
-	for i in 0..3 {
+	for i in 0 .. 3 {
 		// row
 		row := i * 3
-		if field.boxes[row].content == field.boxes[row + 1].content && field.boxes[row].content == field.boxes[row + 2].content && field.boxes[row].content != Content.empty {
+		if field.boxes[row].content == field.boxes[row + 1].content
+			&& field.boxes[row].content == field.boxes[row + 2].content
+			&& field.boxes[row].content != Content.empty {
 			return field.boxes[row].content
 		}
 
 		// column
-		if field.boxes[i].content == field.boxes[i + 3].content && field.boxes[i].content == field.boxes[i + 6].content && field.boxes[i].content != Content.empty {
+		if field.boxes[i].content == field.boxes[i + 3].content
+			&& field.boxes[i].content == field.boxes[i + 6].content
+			&& field.boxes[i].content != Content.empty {
 			return field.boxes[i].content
 		}
 	}
 
 	// other
-	if field.boxes[0].content == field.boxes[4].content && field.boxes[0].content == field.boxes[8].content && field.boxes[0].content != Content.empty {
+	if field.boxes[0].content == field.boxes[4].content
+		&& field.boxes[0].content == field.boxes[8].content
+		&& field.boxes[0].content != Content.empty {
 		return field.boxes[0].content
 	}
-	if field.boxes[2].content == field.boxes[4].content && field.boxes[2].content == field.boxes[6].content && field.boxes[2].content != Content.empty {
+	if field.boxes[2].content == field.boxes[4].content
+		&& field.boxes[2].content == field.boxes[6].content
+		&& field.boxes[2].content != Content.empty {
 		return field.boxes[2].content
 	}
 
-	return error("No winner")
+	return error('No winner')
 }

@@ -3,7 +3,7 @@ module box
 pub struct Box {
 pub mut:
 	selected bool
-	content Content
+	content  Content
 }
 
 pub fn new_box(index int) Box {

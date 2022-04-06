@@ -2,20 +2,22 @@ module src
 
 import term
 import term.ui
-import box { Content }
-import field { new_field, Field, Direction }
+import src.box { Content }
+import src.field { Direction, Field, new_field }
 
 [heap]
 pub struct App {
 mut:
-	next Content
+	next box.Content
 pub mut:
 	tui   &ui.Context = 0
-	field Field
+	field field.Field
 }
 
 pub fn new_app() App {
-	return App{next: Content.x}
+	return App{
+		next: Content.x
+	}
 }
 
 pub fn (mut app App) event(e &ui.Event) {
@@ -60,16 +62,17 @@ pub fn (mut app App) frame() {
 			goto no_winner
 			Content.empty
 		}
-		message := "Winner is $winner!"
-		app.tui.draw_text((app.tui.window_width - message.len) / 2, (app.tui.window_height - 5) / 2 + 6, message)
+		message := 'Winner is $winner!'
+		app.tui.draw_text((app.tui.window_width - message.len) / 2,
+			(app.tui.window_height - 5) / 2 + 6, message)
 		app.field.frozen = true
 		goto finish
 	}
-
 	no_winner:
 	if app.field.is_full() {
-		message := "Field is full, no one is winner!"
-		app.tui.draw_text((app.tui.window_width - message.len) / 2, (app.tui.window_height - 5) / 2 + 6, message)
+		message := 'Field is full, no one is winner!'
+		app.tui.draw_text((app.tui.window_width - message.len) / 2,
+			(app.tui.window_height - 5) / 2 + 6, message)
 		app.field.frozen = true
 	}
 
