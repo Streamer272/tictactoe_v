@@ -22,6 +22,10 @@ pub fn new_field(tui &ui.Context) Field {
 	}
 }
 
+fn (field Field) selected() int {
+	return field.boxes.index(field.boxes.filter(it.selected)[0])
+}
+
 pub fn (mut field Field) display() {
 	field.tui.draw_rect(0, 0, field.tui.window_width, field.tui.window_height)
 
@@ -75,9 +79,8 @@ pub fn (mut field Field) display() {
 	}
 }
 
-pub fn (mut field Field) select_box(direction Direction) {
-	selected := field.boxes.filter(it.selected)[0]
-	index := field.boxes.index(selected)
+pub fn (mut field Field) move(direction Direction) {
+	index := field.selected()
 
 	match direction {
 		.up {
@@ -107,4 +110,15 @@ pub fn (mut field Field) select_box(direction Direction) {
 	}
 
 	field.boxes[index].selected = false
+}
+
+pub fn (mut field Field) select_box(character rune) bool {
+	index := field.selected()
+
+	if field.boxes[index].content == content.covered {
+		field.boxes[index].content = character
+		return true
+	}
+
+	return false
 }
