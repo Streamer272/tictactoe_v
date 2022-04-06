@@ -2,6 +2,7 @@ module field
 
 import term
 import term.ui
+import content
 import box { Box }
 import direction { Direction }
 
@@ -82,27 +83,27 @@ pub fn (mut field Field) select_box(direction Direction) {
 			if index < 3 {
 				return
 			}
-			field.boxes[index - 3].content = Content.selected
+			field.boxes[index - 3].selected = true
 		}
 		.down {
 			if index > 6 {
 				return
 			}
-			field.boxes[index + 3].content = Content.selected
+			field.boxes[index + 3].selected = true
 		}
 		.left {
 			if index % 3 == 0 {
 				return
 			}
-			field.boxes[index - 1].content = Content.selected
+			field.boxes[index - 1].selected = true
 		}
 		.right {
 			if index % 3 == 2 {
 				return
 			}
-			field.boxes[index + 1].content = Content.selected
+			field.boxes[index + 1].selected = true
 		}
 	}
 
-	field.boxes[index].content = Content.covered
+	field.boxes[index].content = content.covered
 }
