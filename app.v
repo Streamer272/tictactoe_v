@@ -56,24 +56,20 @@ pub fn (mut app App) frame() {
 	app.tui.clear()
 	app.field.display()
 
-	mut message := ""
-
-	winner := app.field.get_winner() or {
-		unsafe {
-			goto no_winner
-		}
-		`E`
-	}
-	message = "Winner is $winner!"
-	app.tui.draw_text((app.tui.window_width - message.len) / 2, (app.tui.window_height - 5) / 2 + 6, message)
-	app.field.frozen = true
 	unsafe {
+		winner := app.field.get_winner() or {
+			goto no_winner
+			`E`
+		}
+		message := "Winner is $winner!"
+		app.tui.draw_text((app.tui.window_width - message.len) / 2, (app.tui.window_height - 5) / 2 + 6, message)
+		app.field.frozen = true
 		goto finish
 	}
 
 	no_winner:
 	if app.field.is_full() {
-		message = "Field is full, no one is winner!"
+		message := "Field is full, no one is winner!"
 		app.tui.draw_text((app.tui.window_width - message.len) / 2, (app.tui.window_height - 5) / 2 + 6, message)
 		app.field.frozen = true
 	}
