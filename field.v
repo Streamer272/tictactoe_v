@@ -9,6 +9,8 @@ import direction { Direction }
 pub struct Field {
 mut:
 	tui &ui.Context
+	width int
+	height int
 pub mut:
 	boxes []Box
 }
@@ -72,10 +74,14 @@ pub fn (mut field Field) display() {
 		}
 	}
 
-	width := (field.tui.window_width - 13) / 2
-	height := (field.tui.window_height - 5) / 2
+	if field.width == 0 {
+		field.width = (field.tui.window_width - 13) / 2
+	}
+	if field.height == 0 {
+		field.height = (field.tui.window_height - 5) / 2
+	}
 	for index, row in board {
-		field.tui.draw_text(width, height + index, row)
+		field.tui.draw_text(field.width, field.height + index, row)
 	}
 }
 
@@ -121,4 +127,8 @@ pub fn (mut field Field) select_box(character rune) bool {
 	}
 
 	return false
+}
+
+pub fn (mut field Field) is_full() bool {
+	return field.boxes.filter(it.content == content.covered).len == 0
 }

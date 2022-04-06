@@ -55,8 +55,12 @@ pub fn (mut app App) event(e &ui.Event) {
 
 pub fn (mut app App) frame() {
 	app.tui.clear()
+
 	app.field.display()
-	app.tui.set_cursor_position(0, 0)
-	app.tui.reset()
+	if app.field.is_full() {
+		message := "Field is full, no one is winner!"
+		app.tui.draw_text((app.tui.window_width - message.len) / 2, (app.tui.window_height - 5) / 2 + 6, message)
+	}
+
 	app.tui.flush()
 }
