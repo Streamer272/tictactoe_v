@@ -19,7 +19,6 @@ fn main() {
 			app.frame()
 		}
 		event_fn: fn (e &ui.Event, a voidptr) {
-			println("Got event $e on $a")
 			mut app := &App(a)
 			app.event(e)
 		}
