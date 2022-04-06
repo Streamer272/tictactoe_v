@@ -1,5 +1,6 @@
 module main
 
+/*
 import term
 import term.ui
 import app { App, new_app }
@@ -30,4 +31,11 @@ fn main() {
 	)
 	app.field = new_field(app.tui)
 	app.tui.run() or { panic(err) }
+}
+*/
+
+import src
+
+fn main() {
+	src.run()
 }

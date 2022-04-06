@@ -1,22 +1,21 @@
-module app
+module src
 
 import term
 import term.ui
-import content
-import field { Field }
-import direction { Direction }
+import box { Content }
+import field { new_field, Field, Direction }
 
 [heap]
 pub struct App {
 mut:
-	next rune
+	next Content
 pub mut:
 	tui   &ui.Context = 0
 	field Field
 }
 
 pub fn new_app() App {
-	return App{next: content.x}
+	return App{next: Content.x}
 }
 
 pub fn (mut app App) event(e &ui.Event) {
@@ -29,8 +28,8 @@ pub fn (mut app App) event(e &ui.Event) {
 				.enter {
 					app.field.select_box(app.next) or { return }
 					app.next = match app.next {
-						content.x { content.y }
-						else { content.x }
+						.x { Content.y }
+						else { Content.x }
 					}
 				}
 				.w, .k, .up {
@@ -59,7 +58,7 @@ pub fn (mut app App) frame() {
 	unsafe {
 		winner := app.field.get_winner() or {
 			goto no_winner
-			`E`
+			Content.empty
 		}
 		message := "Winner is $winner!"
 		app.tui.draw_text((app.tui.window_width - message.len) / 2, (app.tui.window_height - 5) / 2 + 6, message)
@@ -76,4 +75,31 @@ pub fn (mut app App) frame() {
 
 	finish:
 	app.tui.flush()
+}
+
+pub fn run() {
+	mut app := new_app()
+	app.tui = ui.init(
+		user_data: &app
+		cleanup_fn: fn (a voidptr) {
+			mut app := &App(a)
+			app.free()
+		}
+		frame_fn: fn (a voidptr) {
+			mut app := &App(a)
+			app.frame()
+		}
+		event_fn: fn (e &ui.Event, a voidptr) {
+			mut app := &App(a)
+			app.event(e)
+		}
+		fail_fn: fn (error string) {
+			panic(error)
+		}
+		capture_events: true
+		hide_cursor: true
+		frame_rate: 60
+	)
+	app.field = new_field(app.tui)
+	app.tui.run() or { panic(err) }
 }

@@ -2,9 +2,7 @@ module field
 
 import term
 import term.ui
-import content
-import box { Box }
-import direction { Direction }
+import box { Box, Content }
 
 pub struct Field {
 mut:
@@ -36,7 +34,11 @@ pub fn (mut field Field) display() {
 	mut current_row := ""
 	mut board := []string{}
 	for index, box in field.boxes {
-		value := box.content.str()
+		value := match box.content {
+			.empty { `■` }
+			.x { `X` }
+			.y { `Y` }
+		}
 
 		match index % 3 {
 			0 {
@@ -120,44 +122,43 @@ pub fn (mut field Field) move(direction Direction) {
 	field.boxes[index].selected = false
 }
 
-pub fn (mut field Field) select_box(character rune) ? {
+pub fn (mut field Field) select_box(content Content) ? {
 	if field.frozen {
 		return error("Field is frozen")
 	}
 
 	index := field.selected()
 
-	if field.boxes[index].content == content.covered {
-		field.boxes[index].content = character
-		return
+	if field.boxes[index].content != Content.empty {
+		return error("Box not empty")
 	}
 
-	return error("Box not empty")
+	field.boxes[index].content = content
 }
 
 pub fn (field Field) is_full() bool {
-	return field.boxes.filter(it.content == content.covered).len == 0
+	return field.boxes.filter(it.content == Content.empty).len == 0
 }
 
-pub fn (field Field) get_winner() ?rune {
+pub fn (field Field) get_winner() ?Content {
 	for i in 0..3 {
 		// row
 		row := i * 3
-		if field.boxes[row].content == field.boxes[row + 1].content && field.boxes[row].content == field.boxes[row + 2].content && field.boxes[row].content != content.covered {
+		if field.boxes[row].content == field.boxes[row + 1].content && field.boxes[row].content == field.boxes[row + 2].content && field.boxes[row].content != Content.empty {
 			return field.boxes[row].content
 		}
 
 		// column
-		if field.boxes[i].content == field.boxes[i + 3].content && field.boxes[i].content == field.boxes[i + 6].content && field.boxes[i].content != content.covered {
+		if field.boxes[i].content == field.boxes[i + 3].content && field.boxes[i].content == field.boxes[i + 6].content && field.boxes[i].content != Content.empty {
 			return field.boxes[i].content
 		}
 	}
 
 	// other
-	if field.boxes[0].content == field.boxes[4].content && field.boxes[0].content == field.boxes[8].content && field.boxes[0].content != content.covered {
+	if field.boxes[0].content == field.boxes[4].content && field.boxes[0].content == field.boxes[8].content && field.boxes[0].content != Content.empty {
 		return field.boxes[0].content
 	}
-	if field.boxes[2].content == field.boxes[4].content && field.boxes[2].content == field.boxes[6].content && field.boxes[2].content != content.covered {
+	if field.boxes[2].content == field.boxes[4].content && field.boxes[2].content == field.boxes[6].content && field.boxes[2].content != Content.empty {
 		return field.boxes[2].content
 	}
 

@@ -1,4 +1,4 @@
-module direction
+module field
 
 pub enum Direction {
 	up
