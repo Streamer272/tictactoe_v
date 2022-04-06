@@ -8,5 +8,7 @@ pub mut:
 }
 
 pub fn new_box(index int) Box {
-	return Box { content: if index == 4 { Content.selected } else { Content.covered } }
+	return Box{
+		content: if index == 4 { Content.selected } else { Content.covered }
+	}
 }

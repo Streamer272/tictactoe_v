@@ -2,13 +2,12 @@ module app
 
 import term
 import term.ui
-
 import field { Field }
 
 [heap]
 pub struct App {
 pub mut:
-	tui &ui.Context = 0
+	tui   &ui.Context = 0
 	field Field
 }
 

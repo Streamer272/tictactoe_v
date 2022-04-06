@@ -2,19 +2,18 @@ module main
 
 import term
 import term.ui
-
-import app { new_app, App }
-import field { new_field, Field }
+import app { App, new_app }
+import field { new_field }
 
 fn main() {
 	mut app := new_app()
 	app.tui = ui.init(
-		user_data: &app,
+		user_data: &app
 		cleanup_fn: fn (a voidptr) {
 			mut app := &App(a)
 			app.free()
 		}
-		frame_fn: fn(a voidptr) {
+		frame_fn: fn (a voidptr) {
 			mut app := &App(a)
 			app.frame()
 		}

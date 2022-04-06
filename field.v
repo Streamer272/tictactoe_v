@@ -2,7 +2,6 @@ module field
 
 import term
 import term.ui
-
 import box { Box }
 
 pub struct Field {
@@ -14,13 +13,16 @@ pub mut:
 
 pub fn new_field(tui &ui.Context) Field {
 	unsafe {
-		return Field { tui: tui, boxes: []Box{len: 9, cap: 9, init: box.new_box(it) } }
+		return Field{
+			tui: tui
+			boxes: []Box{len: 9, cap: 9, init: box.new_box(it)}
+		}
 	}
 }
 
 pub fn (mut field Field) display() {
 	d := 5
-	x := "lmao $d"
+	x := 'lmao $d'
 	field.tui.draw_rect(0, 0, field.tui.window_width, field.tui.window_height)
 	field.tui.draw_text(10, 10, x)
 	/*
