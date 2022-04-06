@@ -13,6 +13,7 @@ mut:
 	height int
 pub mut:
 	boxes []Box
+	frozen bool
 }
 
 pub fn new_field(tui &ui.Context) Field {
@@ -20,6 +21,7 @@ pub fn new_field(tui &ui.Context) Field {
 		return Field{
 			tui: tui
 			boxes: []Box{len: 9, cap: 9, init: box.new_box(it)}
+			frozen: false
 		}
 	}
 }
@@ -118,17 +120,46 @@ pub fn (mut field Field) move(direction Direction) {
 	field.boxes[index].selected = false
 }
 
-pub fn (mut field Field) select_box(character rune) bool {
+pub fn (mut field Field) select_box(character rune) ? {
+	if field.frozen {
+		return error("Field is frozen")
+	}
+
 	index := field.selected()
 
 	if field.boxes[index].content == content.covered {
 		field.boxes[index].content = character
-		return true
+		return
 	}
 
-	return false
+	return error("Box not empty")
 }
 
-pub fn (mut field Field) is_full() bool {
+pub fn (field Field) is_full() bool {
 	return field.boxes.filter(it.content == content.covered).len == 0
+}
+
+pub fn (field Field) get_winner() ?rune {
+	for i in 0..3 {
+		// row
+		row := i * 3
+		if field.boxes[row].content == field.boxes[row + 1].content && field.boxes[row].content == field.boxes[row + 2].content && field.boxes[row].content != content.covered {
+			return field.boxes[row].content
+		}
+
+		// column
+		if field.boxes[i].content == field.boxes[i + 3].content && field.boxes[i].content == field.boxes[i + 6].content && field.boxes[i].content != content.covered {
+			return field.boxes[i].content
+		}
+	}
+
+	// other
+	if field.boxes[0].content == field.boxes[4].content && field.boxes[0].content == field.boxes[8].content && field.boxes[0].content != content.covered {
+		return field.boxes[0].content
+	}
+	if field.boxes[2].content == field.boxes[4].content && field.boxes[2].content == field.boxes[6].content && field.boxes[2].content != content.covered {
+		return field.boxes[2].content
+	}
+
+	return error("No winner")
 }

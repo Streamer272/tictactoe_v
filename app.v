@@ -27,11 +27,10 @@ pub fn (mut app App) event(e &ui.Event) {
 					exit(0)
 				}
 				.enter {
-					if app.field.select_box(app.next) {
-						app.next = match app.next {
-							content.x { content.y }
-							else { content.x }
-						}
+					app.field.select_box(app.next) or { return }
+					app.next = match app.next {
+						content.x { content.y }
+						else { content.x }
 					}
 				}
 				.w, .k, .up {
@@ -55,12 +54,30 @@ pub fn (mut app App) event(e &ui.Event) {
 
 pub fn (mut app App) frame() {
 	app.tui.clear()
-
 	app.field.display()
-	if app.field.is_full() {
-		message := "Field is full, no one is winner!"
-		app.tui.draw_text((app.tui.window_width - message.len) / 2, (app.tui.window_height - 5) / 2 + 6, message)
+
+	mut message := ""
+
+	winner := app.field.get_winner() or {
+		unsafe {
+			goto no_winner
+		}
+		`E`
+	}
+	message = "Winner is $winner!"
+	app.tui.draw_text((app.tui.window_width - message.len) / 2, (app.tui.window_height - 5) / 2 + 6, message)
+	app.field.frozen = true
+	unsafe {
+		goto finish
 	}
 
+	no_winner:
+	if app.field.is_full() {
+		message = "Field is full, no one is winner!"
+		app.tui.draw_text((app.tui.window_width - message.len) / 2, (app.tui.window_height - 5) / 2 + 6, message)
+		app.field.frozen = true
+	}
+
+	finish:
 	app.tui.flush()
 }
