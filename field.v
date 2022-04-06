@@ -3,6 +3,7 @@ module field
 import term
 import term.ui
 import box { Box }
+import direction { Direction }
 
 pub struct Field {
 mut:
@@ -21,10 +22,9 @@ pub fn new_field(tui &ui.Context) Field {
 }
 
 pub fn (mut field Field) display() {
-	d := 5
-	x := 'lmao $d'
 	field.tui.draw_rect(0, 0, field.tui.window_width, field.tui.window_height)
-	field.tui.draw_text(10, 10, x)
+
+	board := ""
 	/*
 	for index, box in field.boxes {
 		mut value := ""
@@ -71,4 +71,38 @@ pub fn (mut field Field) display() {
 		}
 	}
 	*/
+}
+
+pub fn (mut field Field) select_box(direction Direction) {
+	selected := field.boxes.filter(it.selected)[0]
+	index := field.boxes.index(selected)
+
+	match direction {
+		.up {
+			if index < 3 {
+				return
+			}
+			field.boxes[index - 3].content = Content.selected
+		}
+		.down {
+			if index > 6 {
+				return
+			}
+			field.boxes[index + 3].content = Content.selected
+		}
+		.left {
+			if index % 3 == 0 {
+				return
+			}
+			field.boxes[index - 1].content = Content.selected
+		}
+		.right {
+			if index % 3 == 2 {
+				return
+			}
+			field.boxes[index + 1].content = Content.selected
+		}
+	}
+
+	field.boxes[index].content = Content.covered
 }
