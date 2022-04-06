@@ -44,7 +44,6 @@ pub fn (mut app App) event(e &ui.Event) {
 
 pub fn (mut app App) frame() {
 	app.tui.clear()
-	app.tui.set_bg_color(r: 63, g: 81, b: 181)
 	app.field.display()
 	app.tui.set_cursor_position(0, 0)
 	app.tui.reset()

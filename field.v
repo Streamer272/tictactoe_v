@@ -57,14 +57,21 @@ pub fn (mut field Field) display() {
 				}
 
 				board << current_row
+
+				if index != 8 {
+					board << "|---+---+---|"
+				}
+
 				current_row = ""
 			}
 			else {}
 		}
 	}
 
+	width := (field.tui.window_width - board[0].len) / 2
+	height := (field.tui.window_height - board.len) / 2
 	for index, row in board {
-		field.tui.draw_text((field.tui.window_width - 13) / 2, (field.tui.window_height - 3) / 2 + index, row)
+		field.tui.draw_text(width, height + index, row)
 	}
 }
 
