@@ -25,53 +25,47 @@ pub fn new_field(tui &ui.Context) Field {
 pub fn (mut field Field) display() {
 	field.tui.draw_rect(0, 0, field.tui.window_width, field.tui.window_height)
 
-	board := ""
-	/*
+	mut current_row := ""
+	mut board := []string{}
 	for index, box in field.boxes {
-		mut value := ""
-
-		match box.content {
-			.covered, .selected {
-				value = "■"
-			}
-			.uncovered_x {
-				value = "X"
-			}
-			.uncovered_o {
-				value = "O"
-			}
-		}
+		value := box.content.str()
 
 		match index % 3 {
 			0 {
-				if box.content == .selected {
-					print("[ $value ]")
+				if box.selected {
+					current_row += "[ $value ]"
 				}
-				else if field.boxes[index + 1].content == .selected {
-					print("| $value [")
+				else if field.boxes[index + 1].selected {
+					current_row += "| $value ["
 				}
 				else {
-					print("| $value |")
+					current_row += "| $value |"
 				}
 			}
 			1 {
-				print(" $value ")
+				current_row += " $value "
 			}
 			2 {
-				if box.content == .selected {
-					println("[ $value ]")
+				if box.selected {
+					current_row += "[ $value ]"
 				}
-				else if field.boxes[index - 1].content == .selected {
-					println("] $value |")
+				else if field.boxes[index - 1].selected {
+					current_row += "] $value |"
 				}
 				else {
-					println("| $value |")
+					current_row += "| $value |"
 				}
+
+				board << current_row
+				current_row = ""
 			}
 			else {}
 		}
 	}
-	*/
+
+	for index, row in board {
+		field.tui.draw_text((field.tui.window_width - 13) / 2, (field.tui.window_height - 3) / 2 + index, row)
+	}
 }
 
 pub fn (mut field Field) select_box(direction Direction) {
@@ -86,7 +80,7 @@ pub fn (mut field Field) select_box(direction Direction) {
 			field.boxes[index - 3].selected = true
 		}
 		.down {
-			if index > 6 {
+			if index > 5 {
 				return
 			}
 			field.boxes[index + 3].selected = true
@@ -105,5 +99,5 @@ pub fn (mut field Field) select_box(direction Direction) {
 		}
 	}
 
-	field.boxes[index].content = content.covered
+	field.boxes[index].selected = false
 }
