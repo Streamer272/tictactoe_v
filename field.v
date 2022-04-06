@@ -1,14 +1,21 @@
 module field
 
+import term
+import term.ui
+
 import box { Box }
 
 pub struct Field {
+mut:
+	tui &ui.Context
 pub mut:
 	boxes []Box
 }
 
-pub fn new_field() Field {
-	return Field { boxes: []Box{len: 9, cap: 9, init: box.new_box(it) } }
+pub fn new_field(tui &ui.Context) Field {
+	unsafe {
+		return Field { tui: tui, boxes: []Box{len: 9, cap: 9, init: box.new_box(it) } }
+	}
 }
 
 pub fn (field &Field) display() {

@@ -1,51 +1,33 @@
 module main
 
-import field { new_field }
-
 import term
 import term.ui
 
-[heap]
-struct App {
-pub mut:
-	tui &ui.Context = 0
-}
-
-fn (mut a App) event(e &ui.Event) {
-	match e.typ {
-		.key_down {
-			match e.code {
-				.escape, .q {
-					exit(0)
-				}
-				else {}
-			}
-		}
-		else {}
-	}
-}
+import app { new_app, App }
+import field { new_field, Field }
 
 fn main() {
-	mut app := &App{}
+	mut app := new_app()
 	app.tui = ui.init(
-		user_data: app,
+		user_data: &app,
 		cleanup_fn: fn (a voidptr) {
 			mut app := &App(a)
 			app.free()
+		}
+		frame_fn: fn(a voidptr) {
+			mut app := &App(a)
+			app.frame()
 		}
 		event_fn: fn (e &ui.Event, a voidptr) {
 			println("Got event $e on $a")
 			mut app := &App(a)
 			app.event(e)
 		}
+		fail_fn: panic
 		capture_events: true
 		hide_cursor: true
 		frame_rate: 60
 	)
+	app.field = new_field(app.tui)
 	app.tui.run() or { panic(err) }
-
-	/*
-	field := new_field()
-	field.display()
-	*/
 }
