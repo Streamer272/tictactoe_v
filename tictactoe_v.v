@@ -21,7 +21,9 @@ fn main() {
 			mut app := &App(a)
 			app.event(e)
 		}
-		fail_fn: panic
+		fail_fn: fn (error string) {
+			panic(error)
+		}
 		capture_events: true
 		hide_cursor: true
 		frame_rate: 60

@@ -72,8 +72,8 @@ pub fn (mut field Field) display() {
 		}
 	}
 
-	width := (field.tui.window_width - board[0].len) / 2
-	height := (field.tui.window_height - board.len) / 2
+	width := (field.tui.window_width - 13) / 2
+	height := (field.tui.window_height - 5) / 2
 	for index, row in board {
 		field.tui.draw_text(width, height + index, row)
 	}
